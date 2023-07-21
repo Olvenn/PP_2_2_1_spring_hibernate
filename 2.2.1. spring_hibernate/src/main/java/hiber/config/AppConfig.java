@@ -16,18 +16,16 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
-
 @Configuration
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
 @ComponentScan(value = "hiber")
 public class AppConfig {
 
-   @Autowired
    private Environment env;
-
+   @Autowired
    @Bean
-   public DataSource getDataSource() {
+   public DataSource getDataSource(Environment env) {
       DriverManagerDataSource dataSource = new DriverManagerDataSource();
       dataSource.setDriverClassName(env.getProperty("db.driver"));
       dataSource.setUrl(env.getProperty("db.url"));
@@ -37,10 +35,10 @@ public class AppConfig {
    }
 
    @Bean
-   public LocalSessionFactoryBean getSessionFactory() {
+   public LocalSessionFactoryBean getSessionFactory(Environment env) {
       LocalSessionFactoryBean factoryBean = new LocalSessionFactoryBean();
-      factoryBean.setDataSource(getDataSource());
-      
+      factoryBean.setDataSource(getDataSource(env));
+
       Properties props=new Properties();
       props.put("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
       props.put("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
@@ -51,9 +49,9 @@ public class AppConfig {
    }
 
    @Bean
-   public HibernateTransactionManager getTransactionManager() {
+   public HibernateTransactionManager getTransactionManager(Environment env) {
       HibernateTransactionManager transactionManager = new HibernateTransactionManager();
-      transactionManager.setSessionFactory(getSessionFactory().getObject());
+      transactionManager.setSessionFactory(getSessionFactory(env).getObject());
       return transactionManager;
    }
 }
