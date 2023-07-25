@@ -12,37 +12,41 @@ import java.util.List;
 @Repository
 public class UserDaoImp implements UserDao {
 
-   @Autowired
-   private SessionFactory sessionFactory;
+    private UserDao userDao;
 
-   @Override
-   public void add(User user) {
-      sessionFactory.getCurrentSession().save(user);
-   }
+    @Autowired
+    public UserServiceImp(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
-   @Override
-   @SuppressWarnings("unchecked")
-   public List<User> getListUsers() {
-      TypedQuery<User> query=sessionFactory.getCurrentSession().createQuery("from User");
-      return query.getResultList();
-   }
+    @Override
+    public void add(User user) {
+        sessionFactory.getCurrentSession().save(user);
+    }
 
-   @Override
-   @SuppressWarnings("unchecked")
-   public List<User> getUsersByCar(String model,int series){
-      String queryString = "from User where car.model = :model and car.series =:series";
-      TypedQuery<User> query = (TypedQuery<User>) sessionFactory.getCurrentSession().createQuery(queryString)
-              .setParameter("model", model).setParameter("series",series);
-      return query.getResultList();
-   }
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<User> getListUsers() {
+        TypedQuery<User> query = sessionFactory.getCurrentSession().createQuery("from User");
+        return query.getResultList();
+    }
 
-   @Override
-   @SuppressWarnings("unchecked")
-   public User getUserByCar(String model, int series) {
-      Query<User> query = sessionFactory.getCurrentSession()
-              .createQuery("from User where car.model = :model and car.series =:series", User.class)
-              .setParameter("model", model).setParameter("series",series);
-      User result = query.uniqueResult();
-      return result;
-   }
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<User> getUsersByCar(String model, int series) {
+        String queryString = "from User where car.model = :model and car.series =:series";
+        TypedQuery<User> query = (TypedQuery<User>) sessionFactory.getCurrentSession().createQuery(queryString)
+                .setParameter("model", model).setParameter("series", series);
+        return query.getResultList();
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public User getUserByCar(String model, int series) {
+        Query<User> query = sessionFactory.getCurrentSession()
+                .createQuery("from User where car.model = :model and car.series =:series", User.class)
+                .setParameter("model", model).setParameter("series", series);
+        User result = query.uniqueResult();
+        return result;
+    }
 }
